@@ -2,6 +2,7 @@
 
 from torrentool.api import Torrent
 import os
+import sys
 
 
 def get_torrents_in_dir(path):
@@ -27,9 +28,17 @@ def get_recursive_files_in_dir(base_dir):
     return relative_paths
 
 
-if __name__ == '__main__':
-    import sys
-    torrents = get_torrents_in_dir(sys.argv[1])
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+
+    torrents = get_torrents_in_dir(argv[1])
     files_in_torrents = get_included_files_for_torrents(torrents)
-    files_in_directory = get_recursive_files_in_dir(sys.argv[2])
-    print(files_in_directory - files_in_torrents)
+    files_in_directory = get_recursive_files_in_dir(argv[2])
+    files_not_in_torrents = files_in_directory - files_in_torrents
+    delimited_output = '\0'.join(files_not_in_torrents) + '\0'
+    print(delimited_output, end='')
+
+
+if __name__ == '__main__':
+    main()
